@@ -226,7 +226,14 @@ public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializab
 	
 	boolean noCacheURI = false;
 	
-	/** Optimize for memory. */
+	/**
+	 * Optimize for memory.
+	 * FIXME remove when we require Java 8
+	 * @deprecated There is no need to intern {@link FreenetURI}s, and this intern() does adhere
+	 * to the same contract as {@link String#intern()} regarding reference equality. FreenetURI
+	 * references should be reused instead.
+	 */
+	@Deprecated
 	public FreenetURI intern() {
 		boolean changedAnything = false;
 		byte[] x = extra;
@@ -289,7 +296,9 @@ public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializab
 		byte[] routingKey,
 		byte[] cryptoKey, byte[] extra2) {
 //		this.uniqueHashCode = super.hashCode();
-		this.keyType = keyType.trim().toUpperCase().intern();
+		keyType = keyType.trim().toUpperCase();
+		keyType = new String(keyType.toCharArray()); // FIXME remove when we require Java 8
+		this.keyType = keyType;
 		this.docName = docName;
 		this.metaStr = metaStr;
 		this.routingKey = routingKey;
@@ -311,7 +320,9 @@ public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializab
 		byte[] cryptoKey, byte[] extra2,
 		long suggestedEdition) {
 //		this.uniqueHashCode = super.hashCode();
-		this.keyType = keyType.trim().toUpperCase().intern();
+		keyType = keyType.trim().toUpperCase();
+		keyType = new String(keyType.toCharArray()); // FIXME remove when we require Java 8
+		this.keyType = keyType;
 		this.docName = docName;
 		this.metaStr = metaStr;
 		this.routingKey = routingKey;
@@ -431,7 +442,9 @@ public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializab
 		if(!sv.isEmpty()) {
 			metaStr = new String[sv.size()];
 			for(int i = 0; i < metaStr.length; i++) {
-				metaStr[i] = sv.get(metaStr.length - 1 - i).intern();
+				String str = sv.get(metaStr.length - 1 - i);
+				str = new String(str.toCharArray()); // FIXME remove when we require Java 8
+				metaStr[i] = str;
 				if(metaStr[i] == null)
 					throw new NullPointerException();
 			}
@@ -660,7 +673,8 @@ public class FreenetURI implements Cloneable, Comparable<FreenetURI>, Serializab
 			newMetaStr = new String[]{name};
 		else {
 			newMetaStr = Arrays.copyOf(metaStr, metaStr.length + 1);
-			newMetaStr[metaStr.length] = name.intern();
+			name = new String(name.toCharArray()); // FIXME remove when we require Java 8
+			newMetaStr[metaStr.length] = name;
 		}
 		return setMetaString(newMetaStr);
 	}

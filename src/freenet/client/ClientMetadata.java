@@ -28,8 +28,9 @@ public class ClientMetadata implements Cloneable, Serializable {
 	}
 
 	public ClientMetadata(String mime) {
-		mimeType = (mime == null) ? null : mime.intern();
-	}
+		mimeType = (mime == null) ? null :
+		        new String(mime.toCharArray()); // FIXME remove when we require Java 8
+    }
 	
 	private ClientMetadata(DataInputStream dis) throws MetadataParseException, IOException {
 	    int magic = dis.readInt();

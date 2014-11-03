@@ -228,7 +228,10 @@ public class SimpleFieldSet {
 							throw new IOException("Unable to decode UTF8, = should not be allowed as first character of a value");
 						}
 					}
-					if(!shortLived) after = after.intern();
+					if(!shortLived) {
+						// FIXME remove when we require Java 8
+						after = new String(after.toCharArray());
+					}
 					put(before, after, allowMultiple, false, true);
 				} else {
 					endMarker = line;
@@ -350,7 +353,9 @@ public class SimpleFieldSet {
      */
     public void putSingle(String key, String value) {
     	if(value == null) return;
-    	if(!shortLived) value = value.intern();
+    	if(!shortLived) {
+    	    value = new String(value.toCharArray()); // FIXME remove when we require Java 8
+    	}
     	if(!put(key, value, false, false, false))
     		throw new IllegalStateException("Value already exists: "+value+" but want to set "+key+" to "+value);
     }
@@ -365,7 +370,9 @@ public class SimpleFieldSet {
      */
     public void putAppend(String key, String value) {
     	if(value == null) return;
-    	if(!shortLived) value = value.intern();
+    	if(!shortLived) {
+    	    value = new String(value.toCharArray()); // FIXME remove when we require Java 8
+    	}
     	put(key, value, true, false, false);
     }
 
@@ -379,7 +386,9 @@ public class SimpleFieldSet {
      */
     public void putOverwrite(String key, String value) {
     	if(value == null) return;
-    	if(!shortLived) value = value.intern();
+    	if(!shortLived) {
+    	    value = new String(value.toCharArray()); // FIXME remove when we require Java 8
+    	}
     	put(key, value, false, true, false);
     }
 
@@ -401,7 +410,9 @@ public class SimpleFieldSet {
 			throw new IllegalArgumentException("Appending a string to a SimpleFieldSet value should not contain the multi-value char \""+String.valueOf(MULTI_VALUE_CHAR)+"\" but it does: \"" +value+"\" for \""+key+"\"", new Exception("error"));
 		}
 		if((idx = key.indexOf(MULTI_LEVEL_CHAR)) == -1) {
-			if(!shortLived) key = key.intern();
+			if(!shortLived) {
+			    key = new String(key.toCharArray()); // FIXME remove when we require Java 8
+			}
 
 			if(overwrite) {
 				values.put(key, value);
@@ -422,7 +433,10 @@ public class SimpleFieldSet {
 			fs = subsets.get(before);
 			if(fs == null) {
 				fs = new SimpleFieldSet(shortLived, alwaysUseBase64);
-				if(!shortLived) before = before.intern();
+				if(!shortLived) {
+					// FIXME remove when we require Java 8
+					before = new String(before.toCharArray());
+				}
 				subsets.put(before, fs);
 			}
 			fs.put(after, value, allowMultiple, overwrite, fromRead);
@@ -824,7 +838,9 @@ public class SimpleFieldSet {
 			subsets = new HashMap<String, SimpleFieldSet>();
 		if(subsets.containsKey(key))
 			throw new IllegalArgumentException("Already contains "+key+" but trying to add a SimpleFieldSet!");
-		if(!shortLived) key = key.intern();
+		if(!shortLived) {
+			key = new String(key.toCharArray()); // FIXME remove when we require Java 8
+		}
 		subsets.put(key, fs);
 	}
 
