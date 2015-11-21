@@ -13,6 +13,7 @@ import freenet.l10n.NodeL10n;
 import freenet.support.api.Bucket;
 import freenet.support.api.HTTPRequest;
 import freenet.support.io.FileBucket;
+import freenet.support.MultiValueTable;
 
 /**
  * Static Toadlet.
@@ -48,6 +49,9 @@ public class StaticToadlet extends Toadlet {
 			return;
 		}
 		
+		MultiValueTable<String, String> headers = new MultiValueTable<String,String>();
+		headers.put("cache-control", "public");
+		
 		if(path.startsWith(OVERRIDE)) {
 			File f = this.container.getOverrideFile();
 			if(f == null || (!f.exists()) || (f.isDirectory()) || (!f.isFile())) {
@@ -75,7 +79,7 @@ public class StaticToadlet extends Toadlet {
 			}
 			try {
 				FileBucket fb = new FileBucket(from, true, false, false, false);
-				ctx.sendReplyHeadersStatic(200, "OK", null, DefaultMIMETypes.guessMIMEType(path, false), fb.size(), new Date(System.currentTimeMillis() - 1000)); // Already expired, we want it to reload it.
+				ctx.sendReplyHeadersStatic(200, "OK", headers, DefaultMIMETypes.guessMIMEType(path, false), fb.size(), new Date(System.currentTimeMillis() - 1000)); // Already expired, we want it to reload it.
 				ctx.writeData(fb);
 				return;
 			} catch (IOException e) {
@@ -107,7 +111,7 @@ public class StaticToadlet extends Toadlet {
 		URL url = getClass().getResource(ROOT_PATH+path);
 		Date mTime = getUrlMTime(url);
 		
-		ctx.sendReplyHeadersStatic(200, "OK", null, DefaultMIMETypes.guessMIMEType(path, false), data.size(), mTime);
+		ctx.sendReplyHeadersStatic(200, "OK", headers, DefaultMIMETypes.guessMIMEType(path, false), data.size(), mTime);
 
 		ctx.writeData(data);
 	}
