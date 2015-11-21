@@ -125,6 +125,7 @@ import freenet.pluginmanager.PluginStore;
 import freenet.store.BlockMetadata;
 import freenet.store.CHKStore;
 import freenet.store.CachingFreenetStore;
+import freenet.store.FileFreenetStore;
 import freenet.store.FreenetStore;
 import freenet.store.KeyCollisionException;
 import freenet.store.NullFreenetStore;
@@ -408,6 +409,8 @@ public class Node implements TimeSkewDetectorCallback {
 					}
 				} else if(val.equals("ram")) {
 					initRAMClientCacheFS();
+				} else if(val.equals("file-store")) {
+					initFileClientCacheFS();
 				} else /*if(val.equals("none")) */{
 					initNoClientCacheFS();
 				}
@@ -420,7 +423,7 @@ public class Node implements TimeSkewDetectorCallback {
 
 		@Override
 		public String[] getPossibleValues() {
-			return new String[] { "salt-hash", "ram", "none" };
+			return new String[] { "salt-hash", "ram", "none", "file-store" };
 		}
 	}
 
@@ -2261,6 +2264,9 @@ public class Node implements TimeSkewDetectorCallback {
 		} else if(clientCacheType.equals("none")) {
 			initNoClientCacheFS();
 			startedClientCache = true;
+		} else if (clientCacheType.equals("file-store")) {
+		    initFileClientCacheFS();
+		    startedClientCache = true;
 		} else { // ram
 			initRAMClientCacheFS();
 			startedClientCache = true;
@@ -2956,6 +2962,15 @@ public class Node implements TimeSkewDetectorCallback {
 		new RAMFreenetStore<DSAPublicKey>(pubKeyClientcache, (int) Math.min(Integer.MAX_VALUE, maxClientCacheKeys));
 		sskClientcache = new SSKStore(getPubKey);
 		new RAMFreenetStore<SSKBlock>(sskClientcache, (int) Math.min(Integer.MAX_VALUE, maxClientCacheKeys));
+	}
+	
+	private void initFileClientCacheFS() {
+		chkClientcache = new CHKStore();
+		new FileFreenetStore<CHKBlock>(chkClientcache, getStoreDir(), "clientcache-CHK", maxClientCacheKeys);
+		pubKeyClientcache = new PubkeyStore();
+		new FileFreenetStore<DSAPublicKey>(pubKeyClientcache, getStoreDir(), "clientcache-PUBKEY", maxClientCacheKeys);
+		sskClientcache = new SSKStore(getPubKey);
+		new FileFreenetStore<SSKBlock>(sskClientcache, getStoreDir(), "clientcache-SSK", maxClientCacheKeys);
 	}
 
 	private void initNoClientCacheFS() {
