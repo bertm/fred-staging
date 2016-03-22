@@ -1,7 +1,5 @@
 package freenet.clients.http.wizardsteps;
 
-import javax.naming.OperationNotSupportedException;
-
 import freenet.l10n.NodeL10n;
 
 /**
@@ -11,10 +9,9 @@ public final class WizardL10n {
 
 	/**
 	 * Cannot be instantiated.
-	 * @throws OperationNotSupportedException if called, because this class should be not be instantiated.
 	 */
-	private WizardL10n() throws OperationNotSupportedException {
-		throw new OperationNotSupportedException("Cannot instantiate WizardL10n; it is a utility class.");
+	private WizardL10n() {
+		throw new AssertionError("Cannot instantiate WizardL10n; it is a utility class.");
 	}
 
 	public static String l10n(String key) {
