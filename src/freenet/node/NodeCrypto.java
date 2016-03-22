@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.zip.DeflaterOutputStream;
 
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectSet;
-import com.db4o.query.Predicate;
-
 import freenet.crypt.BlockCipher;
 import freenet.crypt.DSAGroup;
 import freenet.crypt.DSAPrivateKey;
@@ -626,49 +622,6 @@ public class NodeCrypto {
 
 	public FreenetInetAddress getBindTo() {
 		return config.getBindTo();
-	}
-
-	public long getNodeHandle(ObjectContainer setupContainer) {
-		if(setupContainer == null) return random.nextLong();
-		// Ignore warnings, this is db4o magic.
-		ObjectSet<HandlePortTuple> result = setupContainer.query(new Predicate<HandlePortTuple>() {
-			final private static long serialVersionUID = -5442250371745036389L;
-			@Override
-			public boolean match(HandlePortTuple tuple) {
-				return tuple.portNumber == portNumber;
-			}
-		});
-		long handle;
-		if(result.hasNext()) {
-			handle = result.next().handle;
-			System.err.println("Retrieved database handle for node on port "+portNumber+": "+handle);
-			return handle;
-		} else {
-			while(true) {
-				handle = random.nextLong();
-				final HandlePortTuple newTuple = new HandlePortTuple();
-				newTuple.handle = handle;
-				// Double-check just in case the RNG is broken (similar things have happened before!)
-				ObjectSet<HandlePortTuple> os = setupContainer.query(new Predicate<HandlePortTuple>() {
-					private static final long serialVersionUID = 7850460146922879499L;
-
-					@Override
-					public boolean match(HandlePortTuple tuple) {
-						return tuple.handle == newTuple.handle;
-					}
-				});
-				if(os.hasNext()) {
-					System.err.println("Generating database handle for node: already taken: "+handle);
-					continue;
-				}
-				newTuple.portNumber = portNumber;
-				setupContainer.store(newTuple);
-				setupContainer.commit();
-				if(logMINOR) Logger.minor(this, "COMMITTED");
-				System.err.println("Generated and stored database handle for node on port "+portNumber+": "+handle);
-				return handle;
-			}
-		}
 	}
 
 	public boolean wantAnonAuth() {
