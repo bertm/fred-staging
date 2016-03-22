@@ -21,8 +21,6 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
-import javax.naming.SizeLimitExceededException;
-
 import freenet.support.Fields;
 import freenet.support.LogThresholdCallback;
 import freenet.support.Logger;
@@ -666,7 +664,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	}
 	
 	@Override
-	public String getPartAsStringThrowing(String name, int maxLength) throws NoSuchElementException, SizeLimitExceededException {
+	public String getPartAsStringThrowing(String name, int maxLength) throws NoSuchElementException {
 		if(freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
 		
@@ -674,7 +672,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 			throw new NoSuchElementException(name);
 		
 		if(part.size() > maxLength)
-			throw new SizeLimitExceededException();
+			throw new IllegalArgumentException("maxLength exceeded by value for " + name);
 		
 		return getPartAsLimitedString(part, maxLength);
 	}
@@ -725,7 +723,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 	}
 	
 	@Override
-	public byte[] getPartAsBytesThrowing(String name, int maxLength) throws NoSuchElementException, SizeLimitExceededException {
+	public byte[] getPartAsBytesThrowing(String name, int maxLength) throws NoSuchElementException {
 		if(freedParts) throw new IllegalStateException("Already freed");
 		Bucket part = this.parts.get(name);
 		
@@ -733,7 +731,7 @@ public class HTTPRequestImpl implements HTTPRequest {
 			throw new NoSuchElementException(name);
 		
 		if(part.size() > maxLength)
-			throw new SizeLimitExceededException();
+			throw new IllegalArgumentException("maxLength exceeded by value for " + name);
 		
 		return getPartAsLimitedBytes(part, maxLength);
 	}
