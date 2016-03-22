@@ -68,7 +68,7 @@ public class RequestStarterGroup {
 	public final ClientRequestScheduler sskPutSchedulerRT;
 
 	private final NodeStats stats;
-	RequestStarterGroup(Node node, NodeClientCore core, int portNumber, RandomSource random, Config config, SimpleFieldSet fs, ClientContext ctx, long dbHandle) throws InvalidConfigValueException {
+	RequestStarterGroup(Node node, NodeClientCore core, int portNumber, RandomSource random, Config config, SimpleFieldSet fs, ClientContext ctx) throws InvalidConfigValueException {
 		SubConfig schedulerConfig = new SubConfig("node.scheduler", config);
 		this.stats = core.nodeStats;
 		
