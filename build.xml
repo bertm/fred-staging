@@ -1,91 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="freenet-autodep" default="package" basedir=".">
-	<description>
-Freenet is free software that lets you publish and retrieve information without
-fear of censorship. To achieve this, the network is entirely decentralized, and
-all actions are anonymous. Without anonymity, there can never be true freedom
-of speech, and without decentralization the network would be vulnerable to attack.
+<project name="Freenet" default="help">
 
-This file is to build Freenet with minimal effort. It will check for Freenet's
-dependencies and requirements, and will try to satisfy these if they are not
-available (possibly using *pre-built blobs*).
-	</description>
+    <!-- The local.properties file is created and updated by the 'android' tool.
+         It contains the path to the SDK. It should *NOT* be checked into
+         Version Control Systems. -->
+    <property file="local.properties" />
 
-	<import file="build-clean.xml"/>
-	<property name="contrib.ant" value="${lib.contrib.dir}/../build.xml"/>
-	<property name="get.contrib.dir" value="https://downloads.freenetproject.org/latest"/>
-	<available property="contrib.present" file="${contrib.ant}"/>
+    <!-- The ant.properties file can be created by you. It is only edited by the
+         'android' tool to add properties to it.
+         This is the place to change some Ant specific build properties.
+         Here are some properties you may want to change/update:
 
-	<!-- =================================================================== -->
-	<!-- Dependencies (contrib, ie. freenet-ext.jar)                         -->
-	<!-- =================================================================== -->
+         source.dir
+             The name of the source directory. Default is 'src'.
+         out.dir
+             The name of the output directory. Default is 'bin'.
 
-	<target name="-maybe-build-ext" if="contrib.present"><antcall target="build-ext"/></target>
-	<target name="-maybe-get-ext" unless="contrib.present"><antcall target="get-ext"/></target>
-	<target name="ensure-ext" depends="env" unless="lib.contrib.present"
-	  description="try to ensure that Freenet-related dependencies are available">
-		<antcall target="-maybe-build-ext"/>
-		<antcall target="-maybe-get-ext"/>
-	</target>
+         For other overridable properties, look at the beginning of the rules
+         files in the SDK, at tools/ant/build.xml
 
-	<target name="warn-ext" unless="lib.contrib.get">
-		<echo>
-freenet-ext does not appear to be available to the build process. We offer the
-option of downloading it (as a binary), but currently this is an insecure
-process and not recommended for the security conscious.
+         Properties related to the SDK location or the project target should
+         be updated using the 'android' tool with the 'update' action.
 
-If you want to proceed with the download, please add "lib.contrib.get = true"
-to the file override.properties (create it if it doesn't exist), and then run
-me again. (This is the easier option, for newbies.)
+         This file is an integral part of the build system for your
+         application and should be checked into Version Control Systems.
 
-If you want to build freenet-ext from source, please set "lib.contrib.dir"
-instead - see build.properties for help on what values to use. You do not need
-to build freenet-ext explicitly, I will do that automatically; but you need
-ant-contrib installed for that to work.
+         -->
+    <property file="ant.properties" />
 
-Or you can manually put the jar in lib/freenet/freenet-ext.jar, if you want to
-use an "official" version you have downloaded already.
+    <!-- if sdk.dir was not set from one of the property file, then
+         get it from the ANDROID_HOME env var.
+         This must be done before we load project.properties since
+         the proguard config can use sdk.dir -->
+    <property environment="env" />
+    <condition property="sdk.dir" value="${env.ANDROID_HOME}">
+        <isset property="env.ANDROID_HOME" />
+    </condition>
 
-For more options on how to tune the build process, see build.properties.
-		</echo>
-		<fail message="either set lib.contrib.get or lib.contrib.dir" />
-	</target>
+    <!-- The project.properties file is created and updated by the 'android'
+         tool, as well as ADT.
 
-	<target name="get-ext" depends="warn-ext">
-		<get src="${get.contrib.dir}/freenet-ext.jar" dest="${lib.contrib.dir}/freenet-ext.jar"
-		  usetimestamp="true" verbose="true"/>
-		<get src="${get.contrib.dir}/freenet-ext.jar.sha1" dest="${lib.contrib.dir}/freenet-ext.jar.sha1"
-		  usetimestamp="true" verbose="true"/>
-		<checksum file="${lib.contrib.dir}/freenet-ext.jar" algorithm="sha1" pattern="{0} {1}"
-		  verifyproperty="get.contrib.pass"/>
-		<fail unless="${get.contrib.pass}" message="checksum mismatch; please delete the files and try again"/>
-	</target>
+         This contains project specific properties such as project target, and library
+         dependencies. Lower level build properties are stored in ant.properties
+         (or in .classpath for Eclipse projects).
 
-	<target name="build-ext">
-		<ant inheritAll="false" antfile="${contrib.ant}" />
-	</target>
+         This file is an integral part of the build system for your
+         application and should be checked into Version Control Systems. -->
+    <loadproperties srcFile="project.properties" />
 
-	<target name="clean-ext">
-		<ant inheritAll="false" antfile="${contrib.ant}" target="clean"/>
-	</target>
+    <!-- quick check on sdk.dir -->
+    <fail
+            message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through the ANDROID_HOME environment variable."
+            unless="sdk.dir"
+    />
 
-	<!-- =================================================================== -->
-	<!-- Generate GWT code                                                   -->
-	<!-- =================================================================== -->
+    <!--
+        Import per project custom build rules if present at the root of the project.
+        This is the place to put custom intermediary targets such as:
+            -pre-build
+            -pre-compile
+            -post-compile (This is typically used for code obfuscation.
+                           Compiled code location: ${out.classes.absolute.dir}
+                           If this is not done in place, override ${out.dex.input.absolute.dir})
+            -post-package
+            -post-build
+            -pre-clean
+    -->
+    <import file="custom_rules.xml" optional="true" />
 
-	<target name="-maybe-build-gjs" if="gjs.lib.gwt.present"><antcall target="build-gjs"/></target>
-	<target name="-maybe-checkout-gjs" unless="gjs.lib.gwt.present"><antcall target="checkout-gjs"/></target>
-	<target name="ensure-gjs" depends="env-gjs" unless="gjs.present"
-	  description="try to ensure that the GWT-generated javascript is available">
-		<antcall target="-maybe-build-gjs"/>
-		<antcall target="-maybe-checkout-gjs"/>
-	</target>
+    <!-- Import the actual build file.
 
-	<target name="checkout-gjs" depends="clean-gjs" description="checkout pre-generated javascript from VCS">
-		<exec executable="git">
-			<arg value="checkout" />
-			<arg value="${gjs.dst}" />
-		</exec>
-	</target>
+         To customize existing targets, there are two options:
+         - Customize only one target:
+             - copy/paste the target into this file, *before* the
+               <import> task.
+             - customize it to your needs.
+         - Customize the whole content of build.xml
+             - copy/paste the content of the rules files (minus the top node)
+               into this file, replacing the <import> task.
+             - customize to your needs.
+
+         ***********************
+         ****** IMPORTANT ******
+         ***********************
+         In all cases you must update the value of version-tag below to read 'custom' instead of an integer,
+         in order to avoid having your file be overridden by tools such as "android update project"
+    -->
+    <!-- version-tag: 1 -->
+    <import file="${sdk.dir}/tools/ant/build.xml" />
 
 </project>
