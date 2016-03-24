@@ -6,13 +6,13 @@ import java.io.OutputStream;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import org.bouncycastle.crypto.BlockCipher;
-import org.bouncycastle.crypto.InvalidCipherTextException;
-import org.bouncycastle.crypto.engines.AESEngine;
-import org.bouncycastle.crypto.engines.AESLightEngine;
-import org.bouncycastle.crypto.modes.AEADBlockCipher;
-import org.bouncycastle.crypto.params.AEADParameters;
-import org.bouncycastle.crypto.params.KeyParameter;
+import org.spongycastle.crypto.BlockCipher;
+import org.spongycastle.crypto.InvalidCipherTextException;
+import org.spongycastle.crypto.engines.AESEngine;
+import org.spongycastle.crypto.engines.AESLightEngine;
+import org.spongycastle.crypto.modes.AEADBlockCipher;
+import org.spongycastle.crypto.params.AEADParameters;
+import org.spongycastle.crypto.params.KeyParameter;
 
 /** Uses bouncycastle's AEAD code. BC provides Cipher*Stream but they don't work with 
  * authenticating. FIXME This probably needs an internal buffer. Shouldn't be too inefficient 

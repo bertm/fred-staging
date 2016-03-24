@@ -12,7 +12,7 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-import org.bouncycastle.crypto.generators.Poly1305KeyGenerator;
+import org.spongycastle.crypto.generators.Poly1305KeyGenerator;
 
 import freenet.support.Fields;
 

@@ -19,7 +19,7 @@ import java.security.GeneralSecurityException;
 import java.security.Security;
 import java.util.Random;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

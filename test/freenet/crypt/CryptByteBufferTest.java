@@ -20,8 +20,8 @@ import java.util.Random;
 
 import javax.crypto.spec.IvParameterSpec;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.encoders.Hex;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.util.encoders.Hex;
 import org.junit.Test;
 
 public class CryptByteBufferTest {

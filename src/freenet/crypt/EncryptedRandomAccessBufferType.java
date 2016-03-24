@@ -6,8 +6,8 @@ package freenet.crypt;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bouncycastle.crypto.SkippingStreamCipher;
-import org.bouncycastle.crypto.engines.ChaChaEngine;
+import org.spongycastle.crypto.SkippingStreamCipher;
+import org.spongycastle.crypto.engines.ChaChaEngine;
 
 /**
  * Stores information about the algorithms used, the version number, and the footer length for a

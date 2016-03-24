@@ -2,7 +2,7 @@ package freenet.node;
 
 import com.db4o.io.IoAdapter;
 
-import org.bouncycastle.util.Arrays;
+import org.spongycastle.util.Arrays;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Random;

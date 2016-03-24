@@ -61,12 +61,12 @@ public class JceLoader {
 	static private class BouncyCastleLoader {
 		private BouncyCastleLoader() {}
 		private Provider load() throws Throwable {
-			Provider p = Security.getProvider("BC");
+			Provider p = Security.getProvider("SC");
 			if (p == null) {
 				try {
-					Class<?> c = Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
+					Class<?> c = Class.forName("org.spongycastle.jce.provider.BouncyCastleProvider");
 					p = (Provider)c.newInstance();
-					Security.addProvider(p);
+					Security.insertProviderAt(p, 1);
 				} catch(Throwable e) {
 					throw e;
 				}
