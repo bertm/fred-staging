@@ -970,11 +970,14 @@ public final class SimpleToadletServer implements ToadletContainer, Runnable, Li
 
 	@Override
 	public void run() {
+		/*
 		try {
+			// FIXME: This hangs on Android due to deadlock on the socket.
 			networkInterface.setSoTimeout(500);
 		} catch (SocketException e1) {
 			Logger.error(this, "Could not set so-timeout to 500ms; on-the-fly disabling of the interface will not work");
 		}
+		*/
 		boolean finishedStartup = false;
 		while(true) {
 			synchronized(this) {
