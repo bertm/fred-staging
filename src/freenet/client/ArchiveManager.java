@@ -321,7 +321,7 @@ public class ArchiveManager {
 					public void run() {
 						InputStream is = null;
 						try {
-							Compressor.COMPRESSOR_TYPE.LZMA_NEW.decompress(is = data.getInputStream(), os, data.size(), expectedSize);
+							Compressor.COMPRESSOR_TYPE.LZMA_NEW.decompress(is = data.getInputStream(), os, expectedSize, data.size());
 						} catch (CompressionOutputSizeException e) {
 							Logger.error(this, "Failed to decompress archive: "+e, e);
 							wrapper.set(e);
