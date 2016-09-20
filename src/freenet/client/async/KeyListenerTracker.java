@@ -7,7 +7,9 @@ import static java.lang.String.format;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import freenet.crypt.RandomSource;
 import freenet.crypt.SHA256;
@@ -61,7 +63,7 @@ class KeyListenerTracker implements KeySalter {
 	
 	protected final ClientRequestScheduler sched;
 	/** Transient even for persistent scheduler. There is one for each of transient, persistent. */
-	private final ArrayList<KeyListener> keyListeners;
+	private final Set<KeyListener> keyListeners;
 
 	final boolean persistent;
 	
@@ -74,7 +76,7 @@ class KeyListenerTracker implements KeySalter {
 		this.isSSKScheduler = forSSKs;
 		this.isRTScheduler = forRT;
 		this.sched = sched;
-		keyListeners = new ArrayList<KeyListener>();
+		keyListeners = new HashSet<KeyListener>();
 		if(globalSalt == null) {
 		    globalSalt = new byte[32];
 		    random.nextBytes(globalSalt);
@@ -133,13 +135,14 @@ class KeyListenerTracker implements KeySalter {
 					matches.add(listener);
 				}
 			}
-		}
-		if (matches.isEmpty()) {
-			return false;
+			if (matches.isEmpty()) {
+				return false;
+			}
+			keyListeners.removeAll(matches);
 		}
 		for (KeyListener listener : matches) {
 			try {
-				removePendingKeys(listener);
+				listener.onRemove();
 			} catch (Throwable t) {
 				Logger.error(this, format("Error while removing %s", listener), t);
 			}
